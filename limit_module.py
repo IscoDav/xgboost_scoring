@@ -38,46 +38,15 @@ class limit_model():
         # Customers that does not have income but got limits
         df.drop(df.index[indexes], inplace=True)
 
-        # Dropping all duplicate values
-        df.drop_duplicates(subset='customer_id', inplace = True)
 
-        # Adding amount_limit and installment to get total limit
+        self.data = df.copy()
 
-        df['total_limit'] = df['amount_limit'] + df['installment_amount']
-
-        #df = df.rename(columns={"expiry_month_count": "period_month_count"})
-
-        # Filtering outliers from less than 20Ml limit and 15Ml income
-        df_2 = df[(df['total_limit'] <= 20000000) & (df['monthly_income'] <= 15000000)]
-
-    # Removing clients that has ability to pay from the % of > 60%
-        df_2['return_ability'] = (df_2['total_limit'] / df_2['expiry_month_count']) / df_2['monthly_income']
-
-    # Filtering with return ability < 50% for between expiry months 6 and 12
-    # return ability  60% <> 80% for between expiry months 3 and 6
-    # return ability  90% <= for between expiry months 1
-
-        f_1 = df_2.query('return_ability <= 0.55 and 1 <= expiry_month_count <= 12')
-
-        f_2 = df_2.query('0.55 <= return_ability <= 0.80 and  3 <= expiry_month_count <= 6')
-
-        f_3 = df_2.query('return_ability <= 0.9 and expiry_month_count == 1')
-
-        df_3 = pd.concat([f_1,f_2,f_3])
-
-
-        df_3.drop(['customer_id',  'amount_limit', 'installment_amount', 'date', 'return_ability'], axis = 1, inplace = True)
-
-        df_3.reset_index(drop=True, inplace=True)
-
-        self.data = df_3.copy()
-
-        self.X_test = df_3.drop(['total_limit'], axis = 1)
-        self.y_test = df_3['total_limit']
+        self.X_test = df.drop(['total_limit'], axis = 1)
+        self.y_test = df['total_limit']
 
         self.test_check = self.reg.predict(xgb.DMatrix(self.X_test))
 
-        return df_3
+        return df
 
 
     def compare(self):
