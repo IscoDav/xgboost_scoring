@@ -26,7 +26,4 @@ st.line_chart(lines.loc[:,['actual', 'predicted']], width=1, height=0)
 compare = model.compare()
 st.dataframe(compare.style.format(precision=0))
 
-diff = model.differance()
-st.dataframe(diff.style.format(precision=0))
-
 #%%

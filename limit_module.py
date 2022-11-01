@@ -39,6 +39,7 @@ class limit_model():
         indexes = df[df['monthly_income'] < 1000].index
         # Customers that does not have income but got limits
         df.drop(df.index[indexes], inplace=True)
+        self.cust_id = df['customer_id']
 
         df = df.drop('customer_id', axis = 1 )
 
@@ -62,11 +63,6 @@ class limit_model():
 
         self.check = check.copy()
         return check.round()
-
-    def differance(self):
-
-        diff = self.check
-        diff = diff[diff['total_limit'] < -500000]
 
 
     def before_filtering(self):
