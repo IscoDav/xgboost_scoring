@@ -25,6 +25,8 @@ class limit_model():
         self.reg = pickle.load(open(model_file, 'rb'))
         self.before = None
         self.data = None
+        self.cust_id = None
+        self.check = None
 
 
     # take a data file (*.csv) and preprocess it in the same way as preprocessing notebook
@@ -38,6 +40,7 @@ class limit_model():
         # Customers that does not have income but got limits
         df.drop(df.index[indexes], inplace=True)
 
+        df = df.drop('customer_id', axis = 1 )
 
         self.data = df.copy()
 
@@ -52,11 +55,19 @@ class limit_model():
     def compare(self):
 
         check = pd.DataFrame()
+        check['customer_id'] = self.cust_id
         check['actual'] = self.y_test
         check['predicted'] = self.test_check
         check['differance'] = check['actual'] - check['predicted']
 
+        self.check = check.copy()
         return check.round()
+
+    def differance(self):
+
+        diff = self.check
+        diff = diff[diff['total_limit'] < -500000]
+
 
     def before_filtering(self):
         return self.before
