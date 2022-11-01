@@ -26,8 +26,6 @@ class limit_model():
         self.before = None
         self.data = None
         self.cust_id = None
-        self.check = None
-
 
     # take a data file (*.csv) and preprocess it in the same way as preprocessing notebook
 
@@ -61,18 +59,7 @@ class limit_model():
         check['predicted'] = self.test_check
         check['differance'] = check['actual'] - check['predicted']
 
-        self.check = check.copy()
         return check.round()
-
-
-    def before_filtering(self):
-        return self.before
-
-    def viz(self):
-        sns.regplot(x= self.y_test  ,y=self.test_check ,order=1,
-                    scatter_kws={"color": "darkblue", 'alpha': 0.2},
-                    line_kws={"color": "red"})
-        plt.show()
 
 
     def metrics(self):
