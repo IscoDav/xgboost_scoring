@@ -15,7 +15,7 @@ import seaborn as sns
 sns.set()
 
 
-class limitXGB():
+class limit_model():
 
     def __init__(self, model_file):
 
@@ -39,15 +39,14 @@ class limitXGB():
 
         df = df.drop('customer_id', axis = 1 )
 
-        df_2 = df[(df['total_limit'] <= 20000000) & (df['monthly_income'] <= 15000000)]
-        self.data = df_2.copy()
+        self.data = df.copy()
 
-        self.X_test = df_2.drop(['total_limit'], axis = 1)
-        self.y_test = df_2['total_limit']
+        self.X_test = df.drop(['total_limit'], axis = 1)
+        self.y_test = df['total_limit']
 
         self.test_check = self.reg.predict(xgb.DMatrix(self.X_test))
 
-        return df_2
+        return df
 
 
     def compare(self):
