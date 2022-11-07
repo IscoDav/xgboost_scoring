@@ -39,14 +39,15 @@ class limitXGB():
 
         df = df.drop('customer_id', axis = 1 )
 
-        self.data = df.copy()
+        df_2 = df[(df['total_limit'] <= 20000000) & (df['monthly_income'] <= 15000000)]
+        self.data = df_2.copy()
 
-        self.X_test = df.drop(['total_limit'], axis = 1)
-        self.y_test = df['total_limit']
+        self.X_test = df_2.drop(['total_limit'], axis = 1)
+        self.y_test = df_2['total_limit']
 
         self.test_check = self.reg.predict(xgb.DMatrix(self.X_test))
 
-        return df
+        return df_2
 
 
     def compare(self):
