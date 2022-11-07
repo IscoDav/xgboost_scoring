@@ -1,7 +1,8 @@
 import streamlit as st
-from limit_module import *
-xgb = limit_model(xgb='XGBoost_V_02')
-lgb = limit_model(lgb='LGBM_V_02')
+from xgb_limit import *
+from lgb_limit import *
+xgb = limitXGB('XGBoost_V_02')
+lgb = limitLGB('LGBM_V_02')
 
 
 
@@ -13,8 +14,8 @@ st.dataframe(chart_lgb.style.format(precision=0))
 
 st.write(f'## Shape of filtered dataset is {chart_lgb.shape}')
 
-metrics_xgb = xgb.metrics_xgb()
-metrics_lgb = lgb.metrics_lgb()
+metrics_xgb = xgb.metrics()
+metrics_lgb = lgb.metrics()
 
 metrics_xgb['date'] = pd.to_datetime('today').date()
 metrics_lgb['date'] = pd.to_datetime('today').date()
@@ -24,8 +25,8 @@ st.dataframe(metrics_xgb.style.format(precision=2))
 st.write('Prediction metrics of LGBM')
 st.dataframe(metrics_lgb.style.format(precision=2))
 
-lines_xgb = xgb.compare_xgb()
-lines_lgb = lgb.compare_lgb()
+lines_xgb = xgb.compare()
+lines_lgb = lgb.compare()
 
 st.title('XGBoost metrics Vs Wings')
 st.line_chart(lines_xgb.loc[:,['actual', 'predicted']], width=1, height=0)
@@ -33,10 +34,10 @@ st.line_chart(lines_xgb.loc[:,['actual', 'predicted']], width=1, height=0)
 st.title('XGBoost metrics Vs Wings')
 st.line_chart(lines_lgb.loc[:,['actual', 'predicted']], width=1, height=0)
 
-compare_xgb = xgb.compare_xgb()
+compare_xgb = xgb.compare()
 st.dataframe(compare_xgb.style.format(precision=0))
 
-compare_lgb = lgb.compare_lgb()
+compare_lgb = lgb.compare()
 st.dataframe(compare_lgb.style.format(precision=0))
 
 #%%

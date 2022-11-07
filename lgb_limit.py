@@ -8,20 +8,19 @@ import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 pd.options.mode.chained_assignment = None
 
-import xgboost as xgb
+
 import statsmodels.api as sm
 from sklearn.metrics import mean_squared_error, mean_absolute_error
 import seaborn as sns
 sns.set()
 
 
-class limit_model():
+class limitLGB():
 
-    def __init__(self, xgb = 'XGBoost_V_02', lgb = 'LGBM_V_02'):
+    def __init__(self, model_file):
 
         # read the 'model', files which were saved
-        self.xgb = pickle.load(open(xgb, 'rb'))
-        self.lgb = pickle.load(open(lgb, 'rb'))
+        self.reg = pickle.load(open(model_file, 'rb'))
         self.before = None
         self.data = None
         self.cust_id = None
@@ -45,41 +44,30 @@ class limit_model():
         self.X_test = df.drop(['total_limit'], axis = 1)
         self.y_test = df['total_limit']
 
-        self.test_xgb = self.xgb.predict(xgb.DMatrix(self.X_test))
-        self.test_lgb = self.lgb.predict(self.X_test)
-
+        self.test_check = self.reg.predict(self.X_test)
 
         return df
 
 
-    def compare_xgb(self):
+    def compare(self):
 
         check = pd.DataFrame()
         check['customer_id'] = self.cust_id
         check['actual'] = self.y_test
-        check['predicted'] = self.test_xgb
+        check['predicted'] = self.test_check
         check['differance'] = check['actual'] - check['predicted']
 
-        return check
+        return check.round()
 
-    def compare_lgb(self):
 
-        check = pd.DataFrame()
-        check['customer_id'] = self.cust_id
-        check['actual'] = self.y_test
-        check['predicted'] = self.test_lgb
-        check['differance'] = check['actual'] - check['predicted']
-
-        return check
-
-    def metrics_xgb(self):
+    def metrics(self):
 
         y_test = self.data['total_limit']
 
-        rmse = np.sqrt(mean_squared_error(y_test, self.test_xgb))
-        mae = mean_absolute_error(y_test, self.test_xgb)
+        rmse = np.sqrt(mean_squared_error(y_test, self.test_check))
+        mae = mean_absolute_error(y_test, self.test_check)
 
-        X_addC = sm.add_constant(self.test_xgb)
+        X_addC = sm.add_constant(self.test_check)
         result = sm.OLS(y_test, X_addC).fit()
 
         results = pd.DataFrame({'R2' : [result.rsquared], "R2adj": [result.rsquared_adj],
@@ -87,20 +75,7 @@ class limit_model():
 
         return results
 
-    def metrics_lgb(self):
 
-        y_test = self.data['total_limit']
-
-        rmse = np.sqrt(mean_squared_error(y_test, self.test_lgb))
-        mae = mean_absolute_error(y_test, self.test_lgb)
-
-        X_addC = sm.add_constant(self.test_lgb)
-        result = sm.OLS(y_test, X_addC).fit()
-
-        results = pd.DataFrame({'R2' : [result.rsquared], "R2adj": [result.rsquared_adj],
-                                'RMSE': [rmse] , 'MAE': [mae]})
-
-        return results
 
 
 #%%
