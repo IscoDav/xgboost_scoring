@@ -1,7 +1,7 @@
 import streamlit as st
 from xgb_limit import *
 
-xgb = limit_model('XGBoost_V_02')
+xgb = limit_model('XGBoost_V_03')
 
 chart_xgb = xgb.cleaning_and_prediction()
 
